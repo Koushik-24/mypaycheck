@@ -1,0 +1,531 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;min-height:100%;font-family:Arial,Helvetica,sans-serif;}
+body{background:#eef1f5;padding:0;}
+#login-screen{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#0a1628;border-radius:0;padding:1rem;}
+.login-box{background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.12);border-radius:14px;padding:1.75rem 1.25rem;width:100%;max-width:360px;text-align:center;}
+.login-logo{width:50px;height:50px;background:#f90;border-radius:12px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#0a1628;}
+.login-title{font-size:18px;font-weight:500;color:#fff;margin-bottom:4px;}
+.login-sub{font-size:12px;color:rgba(255,255,255,0.38);margin-bottom:1.8rem;}
+.lf{margin-bottom:1rem;text-align:left;}
+.lf label{display:block;font-size:11px;color:rgba(255,255,255,0.42);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;}
+.lf input{width:100%;background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.14);border-radius:8px;padding:10px 14px;font-size:14px;color:#fff;outline:none;font-family:inherit;transition:border-color .2s;}
+.lf input:focus{border-color:#f90;}
+.lf input::placeholder{color:rgba(255,255,255,0.18);}
+.login-btn{width:100%;padding:11px;background:#f90;border:none;border-radius:8px;color:#0a1628;font-size:14px;font-weight:600;cursor:pointer;margin-top:.4rem;font-family:inherit;}
+.login-btn:hover{opacity:.88;}
+.lerr{color:#ff6b6b;font-size:12px;margin-top:8px;display:none;}
+#app{display:none;}
+.shell{display:flex;min-height:100dvh;background:#f0f2f5;border-radius:0;overflow:hidden;}
+.sb{width:210px;background:#0a1628;display:flex;flex-direction:column;flex-shrink:0;}
+.sb-top{padding:12px 14px 8px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
+.sb-logo-row{display:flex;align-items:center;gap:9px;}
+.sb-ic{width:30px;height:30px;background:#f90;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#0a1628;}
+.sb-brand{font-size:13px;font-weight:500;color:#fff;}
+.sb-sub{font-size:10px;color:rgba(255,255,255,0.3);}
+.sb-nav{padding:8px;flex:1;}
+.sb-sec{font-size:10px;color:rgba(255,255,255,0.28);letter-spacing:.07em;text-transform:uppercase;padding:6px 8px 4px;}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;cursor:pointer;margin-bottom:2px;transition:all .15s;}
+.ni:hover{background:rgba(255,255,255,0.06);}
+.ni.active{background:rgba(249,153,0,0.14);}
+.ni-label{font-size:13px;color:rgba(255,255,255,0.55);}
+.ni.active .ni-label{color:#f90;font-weight:500;}
+.sb-bot{padding:10px 14px;border-top:0.5px solid rgba(255,255,255,0.07);}
+.sb-av{display:flex;align-items:center;gap:8px;}
+.av-circle{width:30px;height:30px;background:#1a3a6e;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#7baee8;flex-shrink:0;}
+.av-name{font-size:12px;color:rgba(255,255,255,0.7);}
+.av-email{font-size:10px;color:rgba(255,255,255,0.28);}
+.lo-btn{margin-top:8px;width:100%;background:none;border:0.5px solid rgba(255,255,255,0.1);border-radius:6px;padding:5px;color:rgba(255,255,255,0.38);font-size:11px;cursor:pointer;font-family:inherit;}
+.lo-btn:hover{color:#fff;border-color:rgba(255,255,255,0.28);}
+.main{flex:1;overflow:auto;min-width:0;}
+.topbar{background:#fff;border-bottom:0.5px solid #e0e2e6;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.pg-title{font-size:15px;font-weight:500;color:#0a1628;}
+.pg-sub{font-size:11px;color:#aaa;}
+.content{padding:12px 16px;}
+.slabel{font-size:11px;font-weight:500;color:#999;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px;}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px;}
+.card{background:#fff;border:0.5px solid #e0e2e6;border-radius:10px;padding:12px 14px;min-width:0;}
+.mc-l{font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
+.mc-v{font-size:20px;font-weight:500;color:#0a1628;}
+.mc-s{font-size:11px;color:#bbb;margin-top:3px;}
+.g-green{color:#1a7a4a;} .g-amber{color:#b85c00;} .g-blue{color:#185fa5;}
+.ct{font-size:13px;font-weight:500;color:#0a1628;padding-bottom:8px;border-bottom:0.5px solid #eee;margin-bottom:10px;}
+.pay-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 9px;border-radius:8px;cursor:pointer;border:0.5px solid transparent;margin-bottom:4px;transition:all .15s;}
+.pay-row:hover{background:#f7f8fb;border-color:#e0e2e6;}
+.pay-row.active{background:#eef4ff;border-color:#bdd0f5;}
+.pm{font-size:13px;font-weight:500;color:#0a1628;}
+.pd{font-size:11px;color:#aaa;margin-top:1px;}
+.pn{font-size:13px;font-weight:500;color:#1a7a4a;text-align:right;}
+.pg{font-size:11px;color:#aaa;text-align:right;}
+.dt{width:100%;font-size:12px;border-collapse:collapse;}
+.dt td{padding:5px 0;border-bottom:0.5px solid #f3f3f3;}
+.dt tr:last-child td{border-bottom:none;}
+.dl{color:#777;} .dv{text-align:right;font-weight:500;color:#0a1628;}
+.dn{color:#c0392b;} .dp{color:#1a7a4a;}
+.dh{font-size:10px;color:#bbb;text-transform:uppercase;letter-spacing:.05em;padding:8px 0 2px;font-weight:500;}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.bg-green{background:#e6f7ef;color:#1a7a4a;}
+.ch-wrap{position:relative;height:180px;margin-top:6px;}
+.ch-leg{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;font-size:11px;color:#777;}
+.sw{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:3px;}
+.dl-bar{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f7f8fb;border:0.5px solid #e0e2e6;border-radius:8px;margin-top:10px;flex-wrap:wrap;}
+.dl-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:7px 12px;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;}
+.dl-btn-pdf{background:#0a1628;color:#fff;}
+.dl-btn-pdf:hover{background:#1a3a6e;}
+.dl-btn-csv{background:#f90;color:#0a1628;}
+.dl-btn-csv:hover{opacity:.85;}
+.dl-btn-print{background:#fff;color:#0a1628;border:0.5px solid #ccc;}
+.dl-btn-print:hover{background:#f5f5f5;}
+.al-row{display:flex;align-items:flex-start;gap:9px;padding:8px 10px;border-radius:8px;margin-bottom:6px;font-size:12px;}
+.al-blue{background:#e6f0fb;border:0.5px solid #bdd0f5;}
+.al-green{background:#e6f7ef;border:0.5px solid #9fd8bc;}
+.al-amber{background:#fef3e2;border:0.5px solid #f5c675;}
+.al-dot{width:7px;height:7px;border-radius:50%;margin-top:3px;flex-shrink:0;}
+.toast{display:none;align-items:center;gap:10px;padding:10px 16px;background:#1a7a4a;color:#fff;border-radius:8px;font-size:13px;margin-bottom:12px;}
+.toast.show{display:flex;}
+
+img,svg,canvas{max-width:100%;}
+.pm,.pd,.pn,.pg,.dl,.dv,.av-name,.av-email,.pg-title,.pg-sub{overflow-wrap:anywhere;}
+.dt{table-layout:auto;}
+
+@media (max-width:1100px){
+  .g4{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .g2{grid-template-columns:1fr;}
+}
+
+@media (max-width:760px){
+  .shell{display:block;min-height:100dvh;overflow:visible;}
+  .sb{width:100%;position:sticky;top:0;z-index:10;display:block;}
+  .sb-top{padding:10px 12px;}
+  .sb-nav{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:8px 10px;border-top:0.5px solid rgba(255,255,255,0.06);}
+  .sb-sec{display:none;}
+  .ni{flex:0 0 auto;margin:0;padding:7px 10px;}
+  .ni-label{white-space:nowrap;font-size:12px;}
+  .sb-bot{display:none;}
+  .main{overflow:visible;}
+  .topbar{padding:10px 12px;align-items:flex-start;}
+  .content{padding:10px 12px;}
+  .g4{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+  .g2{gap:10px;margin-bottom:10px;}
+  .card{padding:10px 11px;border-radius:9px;}
+  .mc-v{font-size:18px;}
+  .ch-wrap{height:165px;}
+  .pay-row{align-items:flex-start;}
+  .dl-btn{flex:1 1 130px;}
+}
+
+@media (max-width:480px){
+  #login-screen{padding:.75rem;}
+  .login-box{padding:1.35rem 1rem;}
+  .login-logo{width:44px;height:44px;font-size:15px;margin-bottom:.75rem;}
+  .login-sub{margin-bottom:1.2rem;}
+  .topbar{display:block;}
+  .topbar>div:last-child{margin-top:4px;font-size:11px!important;}
+  .content{padding:8px;}
+  .g4{grid-template-columns:1fr;}
+  .card{padding:9px 10px;}
+  .pay-row{display:block;}
+  .pay-row>div:last-child{text-align:left;margin-top:4px;}
+  .pn,.pg{text-align:left;}
+  .dt{font-size:11px;}
+  .dt td{padding:4px 0;vertical-align:top;}
+  .dv{padding-left:8px;}
+  .ch-wrap{height:150px;}
+  .ch-leg{gap:7px;font-size:10px;}
+  .al-row{font-size:11px;}
+}
+
+</style>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">AWS</div>
+    <div class="login-title">Employee Pay Portal</div>
+    <div class="login-sub">Amazon Web Services · Confidential</div>
+    <div class="lf"><label>Email</label><input type="email" id="ei" placeholder="you@amazon.com"/></div>
+    <div class="lf"><label>Password</label><input type="password" id="pi" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="lerr" id="lerr">Invalid credentials. Please try again.</div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="shell">
+    <div class="sb">
+      <div class="sb-top">
+        <div class="sb-logo-row">
+          <div class="sb-ic">AWS</div>
+          <div><div class="sb-brand">Pay Portal</div><div class="sb-sub">Amazon Web Services</div></div>
+        </div>
+      </div>
+      <div class="sb-nav">
+        <div class="sb-sec">Main</div>
+        <div class="ni active" onclick="showPage('dashboard',this)">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="rgba(255,255,255,0.55)"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="rgba(255,255,255,0.55)"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="rgba(255,255,255,0.55)"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="rgba(255,255,255,0.55)"/></svg>
+          <span class="ni-label">Dashboard</span>
+        </div>
+        <div class="ni" onclick="showPage('paychecks',this)">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="12" rx="2" stroke="rgba(255,255,255,0.55)" stroke-width="1.2"/><line x1="4" y1="6" x2="12" y2="6" stroke="rgba(255,255,255,0.55)" stroke-width="1"/><line x1="4" y1="9" x2="9" y2="9" stroke="rgba(255,255,255,0.55)" stroke-width="1"/></svg>
+          <span class="ni-label">Pay History</span>
+        </div>
+        <div class="ni" onclick="showPage('w2',this)">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="10" height="14" rx="1.5" stroke="rgba(255,255,255,0.55)" stroke-width="1.2"/><line x1="5" y1="5" x2="10" y2="5" stroke="rgba(255,255,255,0.55)" stroke-width="1"/><line x1="5" y1="8" x2="10" y2="8" stroke="rgba(255,255,255,0.55)" stroke-width="1"/><line x1="5" y1="11" x2="8" y2="11" stroke="rgba(255,255,255,0.55)" stroke-width="1"/></svg>
+          <span class="ni-label">W-2 / Tax Docs</span>
+        </div>
+        <div class="ni" onclick="showPage('profile',this)">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="rgba(255,255,255,0.55)" stroke-width="1.2"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="rgba(255,255,255,0.55)" stroke-width="1.2"/></svg>
+          <span class="ni-label">My Profile</span>
+        </div>
+      </div>
+      <div class="sb-bot">
+        <div class="sb-av">
+          <div class="av-circle">KP</div>
+          <div><div class="av-name">Koushik Ponugoti</div><div class="av-email">koushik@amazon.com</div></div>
+        </div>
+        <button class="lo-btn" onclick="doLogout()">Sign out</button>
+      </div>
+    </div>
+    <div class="main">
+      <div class="topbar">
+        <div><div class="pg-title" id="pg-title">Dashboard</div><div class="pg-sub" id="pg-sub">2026 compensation overview</div></div>
+        <div style="font-size:12px;color:#aaa;">Tax year 2026</div>
+      </div>
+      <div class="content" id="content"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const CREDS={email:'koushik.ponugoti@amazon.com',password:'AWS@2026!'};
+const PC=[
+  {month:'January 2026',short:'Jan',payDate:'01/30/2026',period:'01/01/2026 – 01/31/2026',gross:9007.93,net:6370.75,advice:'00000065113',
+   earnings:[{l:'Regular (153.33 hrs)',a:7961.52},{l:'Flex/PTO (4 hrs)',a:207.70},{l:'Holiday Pay (16 hrs)',a:830.79},{l:'Flex Commuter',a:7.92}],
+   stat:[{l:'Federal Income Tax',a:1066.56},{l:'Social Security',a:553.20},{l:'Medicare',a:129.38},{l:'WA Family Leave',a:48.92},{l:'WA Medical Leave',a:23.79}],
+   other:[{l:'HSA',a:8.33},{l:'Pre-Tax Dental',a:3.00},{l:'Pre-Tax Medical',a:84.00},{l:'401K-Trad',a:720.00}]},
+  {month:'February 2026',short:'Feb',payDate:'02/27/2026',period:'02/01/2026 – 02/28/2026',gross:9121.07,net:6406.33,advice:'00000104851',
+   earnings:[{l:'Regular (173.33 hrs)',a:9000.00},{l:'Comm Addl Inc',a:43.12},{l:'Flex Commuter',a:77.95},{l:'Flex/PTO',a:207.70},{l:'Holiday Pay',a:830.79}],
+   stat:[{l:'Federal Income Tax',a:1091.45},{l:'Social Security',a:560.21},{l:'Medicare',a:131.01},{l:'WA Family Leave',a:49.53},{l:'WA Medical Leave',a:24.09}],
+   other:[{l:'Comm Addl Inc offset',a:43.12},{l:'HSA',a:8.33},{l:'Pre-Tax Dental',a:3.00},{l:'Pre-Tax Medical',a:84.00},{l:'401K-Trad',a:720.00}]},
+  {month:'March 2026',short:'Mar',payDate:'03/31/2026',period:'03/01/2026 – 03/31/2026',gross:9000.00,net:6365.24,advice:'00000151694',
+   earnings:[{l:'Regular (165.33 hrs)',a:8584.61},{l:'Flex/PTO (8 hrs)',a:415.39},{l:'Comm Addl Inc',a:43.12},{l:'Holiday Pay',a:830.79}],
+   stat:[{l:'Federal Income Tax',a:1064.81},{l:'Social Security',a:552.71},{l:'Medicare',a:129.27},{l:'WA Family Leave',a:48.88},{l:'WA Medical Leave',a:23.76}],
+   other:[{l:'HSA',a:8.33},{l:'Pre-Tax Dental',a:3.00},{l:'Pre-Tax Medical',a:84.00},{l:'401K-Trad',a:720.00}]},
+  {month:'April 2026',short:'Apr',payDate:'04/30/2026',period:'04/01/2026 – 04/30/2026',gross:9156.91,net:6317.47,advice:'00000201367',
+   earnings:[{l:'Regular (173.33 hrs)',a:9000.00},{l:'Comm Addl Inc',a:156.91},{l:'Flex/PTO',a:623.09},{l:'Holiday Pay',a:830.79}],
+   stat:[{l:'Federal Income Tax',a:1099.33},{l:'Social Security',a:562.43},{l:'Medicare',a:131.53},{l:'WA Family Leave',a:49.73},{l:'WA Medical Leave',a:24.18}],
+   other:[{l:'Comm Addl Inc offset',a:156.91},{l:'HSA',a:8.33},{l:'Pre-Tax Dental',a:3.00},{l:'Pre-Tax Medical',a:84.00},{l:'401K-Trad',a:720.00}]}
+];
+const f=n=>'$'+parseFloat(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+let charts=[];
+function kc(){charts.forEach(c=>{try{c.destroy()}catch(e){}});charts=[];}
+function mc(id,type,data,opts){const c=new Chart(document.getElementById(id),{type,data,options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},...opts}});charts.push(c);return c;}
+let activeIdx=3;
+
+function showPage(name,el){
+  kc();
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const titles={dashboard:['Dashboard','2026 compensation overview'],paychecks:['Pay History','All earnings statements — click to view & download'],w2:['W-2 / Tax Documents','Official tax forms'],profile:['My Profile','Personal & employment info']};
+  document.getElementById('pg-title').textContent=titles[name][0];
+  document.getElementById('pg-sub').textContent=titles[name][1];
+  const fn={dashboard:pageDashboard,paychecks:pagePaychecks,w2:pageW2,profile:pageProfile};
+  document.getElementById('content').innerHTML=fn[name]();
+  if(name==='dashboard')renderDashCharts();
+  if(name==='paychecks'){showDetail(activeIdx);renderTrendChart();}
+  if(name==='w2'){}
+}
+
+function pageDashboard(){
+  return`<div class="slabel">Year-to-date 2026</div>
+  <div class="g4">
+    <div class="card"><div class="mc-l">YTD Gross</div><div class="mc-v">$36,265</div><div class="mc-s">4 pay periods</div></div>
+    <div class="card"><div class="mc-l">YTD Net Pay</div><div class="mc-v g-green">$25,459</div><div class="mc-s">To ••••4525</div></div>
+    <div class="card"><div class="mc-l">Federal Tax</div><div class="mc-v g-amber">$4,322</div><div class="mc-s">YTD withheld</div></div>
+    <div class="card"><div class="mc-l">401(k)</div><div class="mc-v g-blue">$2,880</div><div class="mc-s">YTD contributed</div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Monthly earnings</div>
+      <div class="ch-wrap"><canvas id="dc1" role="img" aria-label="Monthly gross vs net pay Jan–Apr 2026">Monthly pay data.</canvas></div>
+      <div class="ch-leg"><span><span class="sw" style="background:#0a1628;"></span>Gross</span><span><span class="sw" style="background:#f90;"></span>Net</span></div>
+    </div>
+    <div class="card">
+      <div class="ct">April deductions breakdown</div>
+      <div class="ch-wrap"><canvas id="dc2" role="img" aria-label="April 2026 deductions donut">April deductions.</canvas></div>
+      <div class="ch-leg" id="dc2-leg"></div>
+    </div>
+  </div>
+  <div class="slabel">Alerts</div>
+  <div class="al-row al-green"><div class="al-dot" style="background:#1a7a4a;"></div><div><strong style="color:#1a7a4a;">Direct deposit confirmed</strong> — April 30 deposit of $6,317.47 posted to ••••4525</div></div>
+  <div class="al-row al-blue"><div class="al-dot" style="background:#185fa5;"></div><div><strong style="color:#185fa5;">W-2 available</strong> — Your 2025 W-2 is ready for download in Tax Docs</div></div>
+  <div class="al-row al-amber"><div class="al-dot" style="background:#8a5a00;"></div><div><strong style="color:#8a5a00;">Quick tip</strong> — Go to Pay History to download any paycheck as PDF or CSV</div></div>`;
+}
+
+function renderDashCharts(){
+  mc('dc1','bar',{labels:['Jan','Feb','Mar','Apr'],datasets:[
+    {label:'Gross',data:[9007.93,9121.07,9000,9156.91],backgroundColor:'#0a1628',borderRadius:4},
+    {label:'Net',data:[6370.75,6406.33,6365.24,6317.47],backgroundColor:'#f90',borderRadius:4}
+  ]},{scales:{y:{ticks:{callback:v=>'$'+(v/1000).toFixed(0)+'k',font:{size:10}},grid:{color:'#f3f3f3'}},x:{ticks:{font:{size:10}},grid:{display:false}}}});
+  const ded=[{l:'Net Pay',v:6317.47,c:'#1a7a4a'},{l:'Fed Tax',v:1099.33,c:'#0a1628'},{l:'SS+Medicare',v:693.96,c:'#2b5cad'},{l:'401(k)',v:720,c:'#f90'},{l:'Medical',v:87,c:'#ffc44d'},{l:'WA Leave',v:73.91,c:'#7baee8'},{l:'HSA',v:8.33,c:'#d4edda'}];
+  const tot=ded.reduce((s,d)=>s+d.v,0);
+  mc('dc2','doughnut',{labels:ded.map(d=>d.l),datasets:[{data:ded.map(d=>d.v),backgroundColor:ded.map(d=>d.c),borderWidth:2,borderColor:'#fff'}]},{cutout:'60%'});
+  document.getElementById('dc2-leg').innerHTML=ded.map(d=>`<span><span class="sw" style="background:${d.c};"></span>${d.l} ${((d.v/tot)*100).toFixed(0)}%</span>`).join('');
+}
+
+function pagePaychecks(){
+  return`<div id="toast" class="toast"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#fff" stroke-width="1.5"/><polyline points="5,8.5 7,10.5 11,6" stroke="#fff" stroke-width="1.5" fill="none"/></svg> <span id="toast-msg">Download started!</span></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Pay statements</div>
+      ${PC.map((_,i)=>`<div class="pay-row${i===activeIdx?' active':''}" onclick="showDetail(${i})" id="pr${i}">
+        <div><div class="pm">${PC[i].month}</div><div class="pd">Pay date: ${PC[i].payDate}</div></div>
+        <div><div class="pn">${f(PC[i].net)}</div><div class="pg">Gross: ${f(PC[i].gross)}</div></div>
+      </div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="ct" id="det-title">April 2026 — Statement</div>
+      <div id="det-body"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:12px;">
+    <div class="ct">Earnings trend</div>
+    <div class="ch-wrap"><canvas id="tc" role="img" aria-label="Monthly earnings trend line chart">Earnings trend.</canvas></div>
+  </div>`;
+}
+
+function showDetail(i){
+  activeIdx=i;
+  document.querySelectorAll('.pay-row').forEach((r,j)=>r.classList.toggle('active',j===i));
+  const p=PC[i];
+  document.getElementById('det-title').textContent=p.month+' — Statement';
+  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+    <span class="badge bg-green">Deposited</span>
+    <span style="font-size:11px;color:#aaa;">Advice #${p.advice}</span>
+  </div>
+  <table class="dt">
+    <tr><td class="dh" colspan="2">Earnings</td></tr>`;
+  p.earnings.forEach(e=>h+=`<tr><td class="dl">${e.l}</td><td class="dv">${f(e.a)}</td></tr>`);
+  h+=`<tr><td class="dl" style="font-weight:500;color:#0a1628;">Gross Pay</td><td class="dv" style="font-size:13px;">${f(p.gross)}</td></tr>
+  <tr><td class="dh" colspan="2">Statutory</td></tr>`;
+  p.stat.forEach(e=>h+=`<tr><td class="dl">${e.l}</td><td class="dv dn">-${f(e.a)}</td></tr>`);
+  h+=`<tr><td class="dh" colspan="2">Other</td></tr>`;
+  p.other.forEach(e=>h+=`<tr><td class="dl">${e.l}</td><td class="dv dn">-${f(e.a)}</td></tr>`);
+  h+=`<tr style="border-top:1.5px solid #e0e2e6;"><td style="font-weight:500;color:#0a1628;padding-top:9px;">Net Pay</td><td class="dv dp" style="font-size:14px;padding-top:9px;">${f(p.net)}</td></tr>
+  <tr><td class="dl" style="font-size:11px;color:#ccc;padding-top:3px;">Pay period</td><td class="dv" style="font-size:11px;color:#ccc;padding-top:3px;">${p.period}</td></tr>
+  </table>`;
+  h+=`<div class="dl-bar">
+    <button class="dl-btn dl-btn-pdf" onclick="downloadPDF(${i})">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="#fff" stroke-width="1.2"/><polyline points="10,2 10,5 13,5" stroke="#fff" stroke-width="1.2" fill="none"/></svg>
+      Download PDF
+    </button>
+    <button class="dl-btn dl-btn-csv" onclick="downloadCSV(${i})">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="#0a1628" stroke-width="1.2"/><line x1="1" y1="6.5" x2="15" y2="6.5" stroke="#0a1628" stroke-width=".8"/><line x1="5.5" y1="3" x2="5.5" y2="13" stroke="#0a1628" stroke-width=".8"/></svg>
+      Export CSV
+    </button>
+    <button class="dl-btn dl-btn-print" onclick="downloadPDF(${i})">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="3" y="1" width="10" height="4" rx="1" stroke="#0a1628" stroke-width="1.2"/><path d="M3 5H2a1 1 0 00-1 1v5a1 1 0 001 1h1v3h10v-3h1a1 1 0 001-1V6a1 1 0 00-1-1H3z" stroke="#0a1628" stroke-width="1.2"/></svg>
+      Print
+    </button>
+  </div>`;
+  document.getElementById('det-body').innerHTML=h;
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  if(!t)return;
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function downloadPDF(i){
+  const p=PC[i];
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Earnings Statement - ${p.month}</title>
+<style>body{font-family:Arial,sans-serif;font-size:12px;color:#000;margin:0;padding:30px;max-width:700px;margin:auto;}
+.header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #000;padding-bottom:12px;margin-bottom:16px;}
+.logo{font-size:22px;font-weight:700;letter-spacing:2px;color:#0a1628;}
+.right{text-align:right;}
+.right h2{font-size:18px;margin:0 0 6px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.info-box{background:#f7f7f7;padding:10px 12px;border:1px solid #ddd;}
+.info-box h4{margin:0 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#555;}
+table{width:100%;border-collapse:collapse;margin-bottom:12px;}
+th{background:#0a1628;color:#fff;padding:6px 10px;font-size:11px;text-align:left;}
+td{padding:5px 10px;border-bottom:1px solid #eee;font-size:12px;}
+.amt{text-align:right;}
+.neg{color:#c0392b;}
+.total-row td{font-weight:700;background:#f0f2f5;font-size:13px;}
+.net-row td{font-weight:700;background:#0a1628;color:#fff;font-size:14px;}
+.footer{margin-top:20px;font-size:10px;color:#888;border-top:1px solid #ddd;padding-top:10px;text-align:center;}
+</style></head><body>
+<div class="header">
+  <div><div class="logo">AWS</div><div style="font-size:12px;line-height:1.7;">AMAZON WEB SERVICES INC<br>202 WESTLAKE AVE N<br>SEATTLE, WA 98109</div></div>
+  <div class="right"><h2>Earnings Statement</h2><div>Period: ${p.period}</div><div>Pay Date: ${p.payDate}</div><div>Advice #: ${p.advice}</div></div>
+</div>
+<div class="info-grid">
+  <div class="info-box"><h4>Employee</h4>KOUSHIK PONUGOTI<br>15850 NE 40TH ST APT C213<br>REDMOND, WA 98052</div>
+  <div class="info-box"><h4>Pay Info</h4>Rate: $51.9241/hr · Basis: Salary<br>Filing: Single/MFS<br>Bank: Checking ••••4525</div>
+</div>
+<table><tr><th>Earnings</th><th class="amt">This Period</th></tr>
+${p.earnings.map(e=>`<tr><td>${e.l}</td><td class="amt">${f(e.a)}</td></tr>`).join('')}
+<tr class="total-row"><td>Gross Pay</td><td class="amt">${f(p.gross)}</td></tr></table>
+<table><tr><th>Statutory Deductions</th><th class="amt">Amount</th></tr>
+${p.stat.map(e=>`<tr><td>${e.l}</td><td class="amt neg">-${f(e.a)}</td></tr>`).join('')}</table>
+<table><tr><th>Other Deductions</th><th class="amt">Amount</th></tr>
+${p.other.map(e=>`<tr><td>${e.l}</td><td class="amt neg">-${f(e.a)}</td></tr>`).join('')}
+<tr class="net-row"><td>NET PAY</td><td class="amt">${f(p.net)}</td></tr></table>
+<div class="footer">Deposited to Checking ••••4525 on ${p.payDate} · Amazon Web Services Inc · EIN: 91-1986180 · atoz.amazon.work</div>
+</body></html>`;
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const w=window.open(url,'_blank');
+  if(!w){const a=document.createElement('a');a.href=url;a.download=`Earnings_${p.month.replace(' ','_')}.html`;a.click();}
+  showToast('Paycheck opened — use Print › Save as PDF to download');
+}
+
+function downloadCSV(i){
+  const p=PC[i];
+  const rows=[
+    ['AMAZON WEB SERVICES INC — EARNINGS STATEMENT'],
+    ['Employee','KOUSHIK PONUGOTI'],
+    ['Pay Period',p.period],['Pay Date',p.payDate],['Advice Number',p.advice],[''],
+    ['EARNINGS','Amount'],
+    ...p.earnings.map(e=>[e.l,e.a.toFixed(2)]),
+    ['Gross Pay',p.gross.toFixed(2)],[''],
+    ['STATUTORY DEDUCTIONS','Amount'],
+    ...p.stat.map(e=>[e.l,(-e.a).toFixed(2)]),[''],
+    ['OTHER DEDUCTIONS','Amount'],
+    ...p.other.map(e=>[e.l,(-e.a).toFixed(2)]),[''],
+    ['NET PAY',p.net.toFixed(2)],
+  ];
+  const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`Paycheck_${p.month.replace(' ','_')}.csv`;
+  a.click();
+  showToast('CSV downloaded successfully!');
+}
+
+function renderTrendChart(){
+  mc('tc','line',{
+    labels:PC.map(p=>p.short),
+    datasets:[
+      {label:'Gross',data:PC.map(p=>p.gross),borderColor:'#0a1628',backgroundColor:'rgba(10,22,40,0.07)',fill:true,tension:.35,pointRadius:4,pointBackgroundColor:'#0a1628'},
+      {label:'Net',data:PC.map(p=>p.net),borderColor:'#f90',backgroundColor:'rgba(249,153,0,0.07)',fill:true,tension:.35,pointRadius:4,pointBackgroundColor:'#f90'}
+    ]
+  },{scales:{y:{ticks:{callback:v=>'$'+(v/1000).toFixed(1)+'k',font:{size:10}},grid:{color:'#f3f3f3'}},x:{ticks:{font:{size:10}},grid:{display:false}}}});
+}
+
+function pageW2(){
+  const d={wages:107240.15,fedTax:19823.45,ss_wages:107240.15,ss_tax:6649.09,med_wages:107240.15,med_tax:1555.00,k401:8640,hsa:99.96,dental:36,medical:1008};
+  return`<div class="card" style="margin-bottom:12px;">
+    <div class="ct">W-2 Wage and Tax Statement — 2025</div>
+    <div style="background:#fff;border:1.5px solid #555;border-radius:4px;padding:14px;font-size:11px;color:#111;font-family:monospace;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+        <div style="font-size:10px;color:#444;">a. Control: 2025-KP-001 &nbsp;|&nbsp; b. EIN: 91-1986180</div>
+        <div style="background:#0a1628;color:#fff;padding:4px 10px;border-radius:4px;font-size:13px;font-weight:700;letter-spacing:1px;">W-2 2025</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+        <div style="border:1px solid #555;padding:6px 8px;grid-column:1/-1;"><div style="font-size:9px;color:#444;margin-bottom:2px;">c. Employer</div><div style="font-weight:700;">AMAZON WEB SERVICES INC · 202 WESTLAKE AVE N, SEATTLE WA 98109</div></div>
+        <div style="border:1px solid #555;padding:6px 8px;grid-column:1/-1;"><div style="font-size:9px;color:#444;margin-bottom:2px;">e. Employee &nbsp; d. SSN: XXX-XX-XXXX</div><div style="font-weight:700;">KOUSHIK PONUGOTI · 15850 NE 40TH ST APT C213, REDMOND WA 98052</div></div>
+        <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">1. Wages, tips</div><div style="font-weight:700;">${f(d.wages)}</div></div>
+        <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">2. Federal tax withheld</div><div style="font-weight:700;">${f(d.fedTax)}</div></div>
+        <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">3. SS wages</div><div style="font-weight:700;">${f(d.ss_wages)}</div></div>
+        <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">4. SS tax withheld</div><div style="font-weight:700;">${f(d.ss_tax)}</div></div>
+        <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">5. Medicare wages</div><div style="font-weight:700;">${f(d.med_wages)}</div></div>
+        <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">6. Medicare tax</div><div style="font-weight:700;">${f(d.med_tax)}</div></div>
+        <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">12a Code D — 401(k)</div><div style="font-weight:700;">${f(d.k401)}</div></div>
+        <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">12b Code W — HSA</div><div style="font-weight:700;">${f(d.hsa)}</div></div>
+        <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">14. Pre-Tax Medical</div><div style="font-weight:700;">${f(d.medical)}</div></div>
+        <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">14. Pre-Tax Dental</div><div style="font-weight:700;">${f(d.dental)}</div></div>
+        <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">15. State</div><div style="font-weight:700;">WA</div></div>
+        <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">17. State income tax</div><div style="font-weight:700;">$0.00 — No WA income tax</div></div>
+      </div>
+      <div style="font-size:9px;color:#555;margin-top:8px;text-align:center;border-top:1px solid #ccc;padding-top:6px;">Form W-2 · 2025 · Dept. of the Treasury — IRS · OMB No. 1545-0008</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+      <button class="dl-btn dl-btn-pdf" onclick="downloadW2()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="#fff" stroke-width="1.2"/><polyline points="10,2 10,5 13,5" stroke="#fff" stroke-width="1.2" fill="none"/></svg>
+        Download W-2 PDF
+      </button>
+      <button class="dl-btn dl-btn-print" onclick="downloadW2()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="3" y="1" width="10" height="4" rx="1" stroke="#0a1628" stroke-width="1.2"/><path d="M3 5H2a1 1 0 00-1 1v5a1 1 0 001 1h1v3h10v-3h1a1 1 0 001-1V6a1 1 0 00-1-1H3z" stroke="#0a1628" stroke-width="1.2"/></svg>
+        Print W-2
+      </button>
+    </div>
+  </div>`;
+}
+
+function downloadW2(){
+  const d={wages:107240.15,fedTax:19823.45,ss_wages:107240.15,ss_tax:6649.09,med_wages:107240.15,med_tax:1555.00,k401:8640,hsa:99.96,dental:36,medical:1008};
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>W-2 2025 - Koushik Ponugoti</title>
+<style>body{font-family:Arial,sans-serif;font-size:11px;padding:30px;max-width:680px;margin:auto;color:#000;}
+.hdr{display:flex;justify-content:space-between;margin-bottom:12px;border-bottom:2px solid #000;padding-bottom:10px;}
+.title{font-size:20px;font-weight:700;letter-spacing:1px;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.box{border:1px solid #555;padding:6px 8px;}
+.wide{grid-column:1/-1;}
+.bl{font-size:9px;color:#444;margin-bottom:2px;}
+.bv{font-weight:700;font-size:12px;}
+.footer{margin-top:12px;font-size:9px;color:#666;text-align:center;border-top:1px solid #ccc;padding-top:8px;}
+</style></head><body>
+<div class="hdr"><div><div class="title">W-2 Wage and Tax Statement</div><div>Tax Year 2025 · OMB No. 1545-0008 · Dept. of the Treasury — IRS</div></div><div style="text-align:right;"><div>Control: 2025-KP-001</div><div>EIN: 91-1986180</div></div></div>
+<div class="grid">
+  <div class="box wide"><div class="bl">c. Employer</div><div class="bv">AMAZON WEB SERVICES INC · 202 WESTLAKE AVE N, SEATTLE WA 98109</div></div>
+  <div class="box wide"><div class="bl">e. Employee · d. SSN: XXX-XX-XXXX</div><div class="bv">KOUSHIK PONUGOTI · 15850 NE 40TH ST APT C213, REDMOND WA 98052</div></div>
+  <div class="box"><div class="bl">1. Wages, tips, other comp.</div><div class="bv">${f(d.wages)}</div></div>
+  <div class="box"><div class="bl">2. Federal income tax withheld</div><div class="bv">${f(d.fedTax)}</div></div>
+  <div class="box"><div class="bl">3. Social security wages</div><div class="bv">${f(d.ss_wages)}</div></div>
+  <div class="box"><div class="bl">4. Social security tax withheld</div><div class="bv">${f(d.ss_tax)}</div></div>
+  <div class="box"><div class="bl">5. Medicare wages and tips</div><div class="bv">${f(d.med_wages)}</div></div>
+  <div class="box"><div class="bl">6. Medicare tax withheld</div><div class="bv">${f(d.med_tax)}</div></div>
+  <div class="box"><div class="bl">12a — Code D (401k Traditional)</div><div class="bv">${f(d.k401)}</div></div>
+  <div class="box"><div class="bl">12b — Code W (HSA)</div><div class="bv">${f(d.hsa)}</div></div>
+  <div class="box"><div class="bl">14 — Pre-Tax Medical</div><div class="bv">${f(d.medical)}</div></div>
+  <div class="box"><div class="bl">14 — Pre-Tax Dental</div><div class="bv">${f(d.dental)}</div></div>
+  <div class="box"><div class="bl">15. State</div><div class="bv">WA</div></div>
+  <div class="box"><div class="bl">17. State income tax</div><div class="bv">$0.00 — Washington has no state income tax</div></div>
+</div>
+<div class="footer">For questions contact Amazon HR at atoz.amazon.work · Phone: 888-892-7180</div>
+</body></html>`;
+  const w=window.open(URL.createObjectURL(new Blob([html],{type:'text/html'})),'_blank');
+  if(!w){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download='W2_2025_Koushik_Ponugoti.html';a.click();}
+}
+
+function pageProfile(){
+  return`<div class="g2">
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+        <div style="width:50px;height:50px;background:#e6f0fb;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:#185fa5;">KP</div>
+        <div><div style="font-size:15px;font-weight:500;color:#0a1628;">Koushik Ponugoti</div><div style="font-size:12px;color:#aaa;">Software Quality Engineer</div><span class="badge bg-green" style="margin-top:4px;display:inline-block;">Active</span></div>
+      </div>
+      <div class="ct">Personal info</div>
+      ${[['Employee ID','047772'],['Department','731200'],['Clock','6091'],['Filing Status','Single / MFS'],['Pay Rate','$51.9241 / hr'],['Pay Basis','Salary']].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid #f0f0f0;font-size:13px;"><span style="color:#888;">${l}</span><span style="font-weight:500;color:#0a1628;">${v}</span></div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="ct">Employer info</div>
+      ${[['Company','Amazon Web Services Inc'],['Address','202 Westlake Ave N'],['City','Seattle, WA 98109'],['EIN','91-1986180'],['Phone','888-892-7180'],['HR Portal','atoz.amazon.work'],['Bank Account','Checking ••••4525']].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid #f0f0f0;font-size:13px;"><span style="color:#888;">${l}</span><span style="font-weight:500;color:#0a1628;">${v}</span></div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function doLogin(){
+  const e=document.getElementById('ei').value.trim();
+  const p=document.getElementById('pi').value;
+  if(e===CREDS.email&&p===CREDS.password){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    showPage('paychecks',document.querySelectorAll('.ni')[1]);
+  }else{document.getElementById('lerr').style.display='block';}
+}
+function doLogout(){
+  kc();
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('ei').value='';document.getElementById('pi').value='';
+  document.getElementById('lerr').style.display='none';
+}
+</script>
