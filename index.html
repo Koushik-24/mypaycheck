@@ -1,4 +1,6 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>AWS Employee Pay Portal</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{width:100%;min-height:100%;font-family:Arial,Helvetica,sans-serif;}
@@ -86,6 +88,33 @@ body{background:#eef1f5;padding:0;}
 .toast{display:none;align-items:center;gap:10px;padding:10px 16px;background:#1a7a4a;color:#fff;border-radius:8px;font-size:13px;margin-bottom:12px;}
 .toast.show{display:flex;}
 
+/* ── Secret Admin Panel ── */
+#secret-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
+#secret-overlay.open{display:flex;}
+.secret-panel{background:#0a1628;border:1px solid rgba(249,153,0,0.35);border-radius:14px;padding:1.5rem;width:100%;max-width:420px;position:relative;box-shadow:0 24px 60px rgba(0,0,0,0.5);}
+.secret-close{position:absolute;top:12px;right:14px;background:none;border:none;color:rgba(255,255,255,0.35);font-size:18px;cursor:pointer;line-height:1;}
+.secret-close:hover{color:#fff;}
+.secret-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(249,153,0,0.12);border:0.5px solid rgba(249,153,0,0.3);border-radius:20px;padding:4px 10px;font-size:10px;font-weight:600;color:#f90;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;}
+.secret-title{font-size:16px;font-weight:600;color:#fff;margin-bottom:4px;}
+.secret-sub{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:18px;}
+.sf{margin-bottom:12px;}
+.sf label{display:block;font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;}
+.sf select,.sf input[type=number]{width:100%;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.14);border-radius:8px;padding:9px 12px;font-size:13px;color:#fff;outline:none;font-family:inherit;appearance:none;}
+.sf select:focus,.sf input[type=number]:focus{border-color:#f90;}
+.sf select option{background:#0a1628;color:#fff;}
+.sf-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.secret-gen-btn{width:100%;padding:11px;background:#f90;border:none;border-radius:8px;color:#0a1628;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.secret-gen-btn:hover{opacity:.88;}
+.secret-hint{font-size:10px;color:rgba(255,255,255,0.2);text-align:center;margin-top:10px;}
+.secret-spinner{width:14px;height:14px;border:2px solid rgba(10,22,40,0.3);border-top-color:#0a1628;border-radius:50%;animation:spin .6s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.secret-result{margin-top:14px;background:rgba(26,122,74,0.12);border:0.5px solid rgba(26,122,74,0.3);border-radius:8px;padding:10px 12px;display:none;}
+.secret-result.show{display:block;}
+.sr-line{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;}
+.sr-label{color:rgba(255,255,255,0.45);}
+.sr-val{color:#fff;font-weight:500;}
+.sr-net{color:#4ade80;font-size:14px;font-weight:700;}
+
 img,svg,canvas{max-width:100%;}
 .pm,.pd,.pn,.pg,.dl,.dv,.av-name,.av-email,.pg-title,.pg-sub{overflow-wrap:anywhere;}
 .dt{table-layout:auto;}
@@ -94,7 +123,6 @@ img,svg,canvas{max-width:100%;}
   .g4{grid-template-columns:repeat(2,minmax(0,1fr));}
   .g2{grid-template-columns:1fr;}
 }
-
 @media (max-width:760px){
   .shell{display:block;min-height:100dvh;overflow:visible;}
   .sb{width:100%;position:sticky;top:0;z-index:10;display:block;}
@@ -114,8 +142,8 @@ img,svg,canvas{max-width:100%;}
   .ch-wrap{height:165px;}
   .pay-row{align-items:flex-start;}
   .dl-btn{flex:1 1 130px;}
+  .sf-row{grid-template-columns:1fr;}
 }
-
 @media (max-width:480px){
   #login-screen{padding:.75rem;}
   .login-box{padding:1.35rem 1rem;}
@@ -136,8 +164,9 @@ img,svg,canvas{max-width:100%;}
   .ch-leg{gap:7px;font-size:10px;}
   .al-row{font-size:11px;}
 }
-
 </style>
+</head>
+<body>
 
 <div id="login-screen">
   <div class="login-box">
@@ -148,6 +177,79 @@ img,svg,canvas{max-width:100%;}
     <div class="lf"><label>Password</label><input type="password" id="pi" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
     <button class="login-btn" onclick="doLogin()">Sign In</button>
     <div class="lerr" id="lerr">Invalid credentials. Please try again.</div>
+  </div>
+</div>
+
+<!-- Secret Admin Overlay -->
+<div id="secret-overlay">
+  <div class="secret-panel">
+    <button class="secret-close" onclick="closeSecret()">✕</button>
+    <div class="secret-badge">
+      <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M8 1L10.5 6H15L11 9.5L12.5 15L8 12L3.5 15L5 9.5L1 6H5.5L8 1Z" fill="#f90"/></svg>
+      Admin Override
+    </div>
+    <div class="secret-title">Generate Paycheck</div>
+    <div class="secret-sub">Synthesize a new earnings statement — not saved to HR systems</div>
+
+    <div class="sf-row">
+      <div class="sf">
+        <label>Month</label>
+        <select id="gen-month">
+          <option value="0">January</option><option value="1">February</option>
+          <option value="2">March</option><option value="3">April</option>
+          <option value="4">May</option><option value="5">June</option>
+          <option value="6">July</option><option value="7">August</option>
+          <option value="8">September</option><option value="9">October</option>
+          <option value="10">November</option><option value="11">December</option>
+        </select>
+      </div>
+      <div class="sf">
+        <label>Year</label>
+        <select id="gen-year">
+          <option value="2025">2025</option>
+          <option value="2026" selected>2026</option>
+          <option value="2027">2027</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sf-row">
+      <div class="sf">
+        <label>Regular Hours</label>
+        <input type="number" id="gen-hours" value="173.33" step="0.01" min="0" max="250"/>
+      </div>
+      <div class="sf">
+        <label>PTO Hours</label>
+        <input type="number" id="gen-pto" value="0" step="1" min="0" max="80"/>
+      </div>
+    </div>
+
+    <div class="sf-row">
+      <div class="sf">
+        <label>Hourly Rate ($)</label>
+        <input type="number" id="gen-rate" value="51.9241" step="0.0001" min="1"/>
+      </div>
+      <div class="sf">
+        <label>401k Contribution ($)</label>
+        <input type="number" id="gen-401k" value="720" step="10" min="0"/>
+      </div>
+    </div>
+
+    <button class="secret-gen-btn" onclick="generatePaycheck()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#0a1628" stroke-width="1.4"/><line x1="8" y1="5" x2="8" y2="11" stroke="#0a1628" stroke-width="1.4"/><line x1="5" y1="8" x2="11" y2="8" stroke="#0a1628" stroke-width="1.4"/></svg>
+      Generate & Add to Portal
+      <div class="secret-spinner" id="gen-spinner"></div>
+    </button>
+
+    <div class="secret-result" id="secret-result">
+      <div class="sr-line"><span class="sr-label">Period</span><span class="sr-val" id="sr-period">—</span></div>
+      <div class="sr-line"><span class="sr-label">Gross Pay</span><span class="sr-val" id="sr-gross">—</span></div>
+      <div class="sr-line"><span class="sr-label">Total Deductions</span><span class="sr-val" id="sr-ded">—</span></div>
+      <div class="sr-line"><span class="sr-label">Net Pay</span><span class="sr-net" id="sr-net">—</span></div>
+      <div style="margin-top:8px;font-size:10px;color:rgba(255,255,255,0.3);text-align:center;">✓ Statement added to Pay History</div>
+    </div>
+
+    <div class="secret-hint">Tip: press Ctrl+Shift+P anytime on Pay History to reopen</div>
   </div>
 </div>
 
@@ -182,7 +284,7 @@ img,svg,canvas{max-width:100%;}
       <div class="sb-bot">
         <div class="sb-av">
           <div class="av-circle">KP</div>
-          <div><div class="av-name">Koushik Ponugoti</div><div class="av-email">koushik@amazon.com</div></div>
+          <div><div class="av-name">Koushik Ponugoti</div><div class="av-email">Koushik@amazon.com</div></div>
         </div>
         <button class="lo-btn" onclick="doLogout()">Sign out</button>
       </div>
@@ -198,9 +300,12 @@ img,svg,canvas{max-width:100%;}
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 const CREDS={email:'koushik.ponugoti@amazon.com',password:'AWS@2026!'};
-const PC=[
+
+// Base paychecks — additional ones get pushed here
+const BASE_PC=[
   {month:'January 2026',short:'Jan',payDate:'01/30/2026',period:'01/01/2026 – 01/31/2026',gross:9007.93,net:6370.75,advice:'00000065113',
    earnings:[{l:'Regular (153.33 hrs)',a:7961.52},{l:'Flex/PTO (4 hrs)',a:207.70},{l:'Holiday Pay (16 hrs)',a:830.79},{l:'Flex Commuter',a:7.92}],
    stat:[{l:'Federal Income Tax',a:1066.56},{l:'Social Security',a:553.20},{l:'Medicare',a:129.38},{l:'WA Family Leave',a:48.92},{l:'WA Medical Leave',a:23.79}],
@@ -218,14 +323,164 @@ const PC=[
    stat:[{l:'Federal Income Tax',a:1099.33},{l:'Social Security',a:562.43},{l:'Medicare',a:131.53},{l:'WA Family Leave',a:49.73},{l:'WA Medical Leave',a:24.18}],
    other:[{l:'Comm Addl Inc offset',a:156.91},{l:'HSA',a:8.33},{l:'Pre-Tax Dental',a:3.00},{l:'Pre-Tax Medical',a:84.00},{l:'401K-Trad',a:720.00}]}
 ];
+
+// ── Persistence: load any saved generated paychecks from localStorage ──
+const STORAGE_KEY='aws_portal_generated_pcs';
+function loadSaved(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    return raw?JSON.parse(raw):[];
+  }catch(e){return[];}
+}
+function saveGenerated(arr){
+  // Only save entries beyond the original 4
+  const generated=arr.slice(BASE_PC.length);
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(generated));}catch(e){}
+}
+// Merge base + saved into mutable PC array
+const PC=[...BASE_PC,...loadSaved()];
+
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTH_DAYS=[31,28,31,30,31,30,31,31,30,31,30,31];
+const ABBR=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
 const f=n=>'$'+parseFloat(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 let charts=[];
 function kc(){charts.forEach(c=>{try{c.destroy()}catch(e){}});charts=[];}
 function mc(id,type,data,opts){const c=new Chart(document.getElementById(id),{type,data,options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},...opts}});charts.push(c);return c;}
 let activeIdx=3;
 
+// ── Secret Panel: Ctrl+Shift+P toggle ──
+let currentPage='dashboard';
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey&&e.shiftKey&&e.key==='P'&&document.getElementById('app').style.display!=='none'){
+    e.preventDefault();
+    // Pre-select next logical month
+    const last=PC[PC.length-1];
+    const lastMonth=parseInt(last.payDate.split('/')[0])-1;
+    const lastYear=parseInt(last.payDate.split('/')[2]);
+    const nextMonth=(lastMonth+1)%12;
+    const nextYear=lastMonth===11?lastYear+1:lastYear;
+    document.getElementById('gen-month').value=nextMonth;
+    document.getElementById('gen-year').value=nextYear;
+    document.getElementById('secret-result').classList.remove('show');
+    document.getElementById('secret-overlay').classList.add('open');
+  }
+  if(e.key==='Escape') closeSecret();
+});
+
+// Also triple-click on the AWS logo in sidebar
+let logoClicks=0,logoTimer=null;
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelector('.sb-ic')?.addEventListener('click',()=>{
+    logoClicks++;
+    clearTimeout(logoTimer);
+    if(logoClicks>=3){
+      logoClicks=0;
+      document.getElementById('secret-result').classList.remove('show');
+      document.getElementById('secret-overlay').classList.add('open');
+    } else {
+      logoTimer=setTimeout(()=>logoClicks=0,600);
+    }
+  });
+});
+
+function closeSecret(){
+  document.getElementById('secret-overlay').classList.remove('open');
+}
+
+// Close on overlay background click
+document.getElementById('secret-overlay').addEventListener('click',function(e){
+  if(e.target===this) closeSecret();
+});
+
+function generatePaycheck(){
+  const monthIdx=parseInt(document.getElementById('gen-month').value);
+  const year=parseInt(document.getElementById('gen-year').value);
+  const hours=parseFloat(document.getElementById('gen-hours').value)||173.33;
+  const pto=parseFloat(document.getElementById('gen-pto').value)||0;
+  const rate=parseFloat(document.getElementById('gen-rate').value)||51.9241;
+  const k401=parseFloat(document.getElementById('gen-401k').value)||720;
+
+  const spinner=document.getElementById('gen-spinner');
+  spinner.style.display='block';
+
+  setTimeout(()=>{
+    const monthName=MONTHS[monthIdx];
+    const lastDay=MONTH_DAYS[monthIdx];
+    const payDay=lastDay; // last day of month
+    const mm=String(monthIdx+1).padStart(2,'0');
+    const payDate=`${mm}/${String(payDay).padStart(2,'0')}/${year}`;
+    const period=`${mm}/01/${year} – ${mm}/${String(lastDay).padStart(2,'0')}/${year}`;
+
+    const regPay=parseFloat((hours*rate).toFixed(2));
+    const ptoPay=parseFloat((pto*rate).toFixed(2));
+    // Small randomised commuter/flex perk
+    const flex=parseFloat((Math.random()*80+5).toFixed(2));
+    const gross=parseFloat((regPay+ptoPay+flex).toFixed(2));
+
+    // Tax calculations (approximations matching prior pay stubs)
+    const fedTax=parseFloat((gross*0.12).toFixed(2));
+    const ss=parseFloat((gross*0.062).toFixed(2));
+    const medi=parseFloat((gross*0.0145).toFixed(2));
+    const waFam=parseFloat((gross*0.0054).toFixed(2));
+    const waMed=parseFloat((gross*0.0026).toFixed(2));
+    const hsa=8.33;
+    const dental=3.00;
+    const medical=84.00;
+
+    const totalDed=fedTax+ss+medi+waFam+waMed+hsa+dental+medical+k401;
+    const net=parseFloat((gross-totalDed).toFixed(2));
+
+    const adviceNum=String(200000+Math.floor(Math.random()*100000)).padStart(11,'0');
+
+    const earnings=[{l:`Regular (${hours.toFixed(2)} hrs)`,a:regPay}];
+    if(pto>0) earnings.push({l:`Flex/PTO (${pto} hrs)`,a:ptoPay});
+    earnings.push({l:'Flex Commuter',a:flex});
+
+    const newPC={
+      month:`${monthName} ${year}`,
+      short:ABBR[monthIdx],
+      payDate,period,
+      gross,net,
+      advice:adviceNum,
+      earnings,
+      stat:[
+        {l:'Federal Income Tax',a:fedTax},
+        {l:'Social Security',a:ss},
+        {l:'Medicare',a:medi},
+        {l:'WA Family Leave',a:waFam},
+        {l:'WA Medical Leave',a:waMed}
+      ],
+      other:[
+        {l:'HSA',a:hsa},{l:'Pre-Tax Dental',a:dental},
+        {l:'Pre-Tax Medical',a:medical},{l:'401K-Trad',a:k401}
+      ]
+    };
+
+    PC.push(newPC);
+    saveGenerated(PC);
+    activeIdx=PC.length-1;
+
+    // Show result summary
+    document.getElementById('sr-period').textContent=period;
+    document.getElementById('sr-gross').textContent=f(gross);
+    document.getElementById('sr-ded').textContent=f(totalDed);
+    document.getElementById('sr-net').textContent=f(net);
+    document.getElementById('secret-result').classList.add('show');
+
+    spinner.style.display='none';
+
+    // Refresh pay history if open
+    if(currentPage==='paychecks'){
+      showPage('paychecks',document.querySelectorAll('.ni')[1]);
+    }
+  },800);
+}
+
 function showPage(name,el){
   kc();
+  currentPage=name;
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
   if(el)el.classList.add('active');
   const titles={dashboard:['Dashboard','2026 compensation overview'],paychecks:['Pay History','All earnings statements — click to view & download'],w2:['W-2 / Tax Documents','Official tax forms'],profile:['My Profile','Personal & employment info']};
@@ -235,41 +490,54 @@ function showPage(name,el){
   document.getElementById('content').innerHTML=fn[name]();
   if(name==='dashboard')renderDashCharts();
   if(name==='paychecks'){showDetail(activeIdx);renderTrendChart();}
-  if(name==='w2'){}
+}
+
+function computeYTD(){
+  return PC.reduce((a,p)=>({gross:a.gross+p.gross,net:a.net+p.net,fed:a.fed+(p.stat[0]?.a||0),k401:a.k401+(p.other.find(o=>o.l.includes('401'))||{a:0}).a}),{gross:0,net:0,fed:0,k401:0});
 }
 
 function pageDashboard(){
+  const ytd=computeYTD();
   return`<div class="slabel">Year-to-date 2026</div>
   <div class="g4">
-    <div class="card"><div class="mc-l">YTD Gross</div><div class="mc-v">$36,265</div><div class="mc-s">4 pay periods</div></div>
-    <div class="card"><div class="mc-l">YTD Net Pay</div><div class="mc-v g-green">$25,459</div><div class="mc-s">To ••••4525</div></div>
-    <div class="card"><div class="mc-l">Federal Tax</div><div class="mc-v g-amber">$4,322</div><div class="mc-s">YTD withheld</div></div>
-    <div class="card"><div class="mc-l">401(k)</div><div class="mc-v g-blue">$2,880</div><div class="mc-s">YTD contributed</div></div>
+    <div class="card"><div class="mc-l">YTD Gross</div><div class="mc-v">${f(ytd.gross)}</div><div class="mc-s">${PC.length} pay periods</div></div>
+    <div class="card"><div class="mc-l">YTD Net Pay</div><div class="mc-v g-green">${f(ytd.net)}</div><div class="mc-s">To ••••4525</div></div>
+    <div class="card"><div class="mc-l">Federal Tax</div><div class="mc-v g-amber">${f(ytd.fed)}</div><div class="mc-s">YTD withheld</div></div>
+    <div class="card"><div class="mc-l">401(k)</div><div class="mc-v g-blue">${f(ytd.k401)}</div><div class="mc-s">YTD contributed</div></div>
   </div>
   <div class="g2">
     <div class="card">
       <div class="ct">Monthly earnings</div>
-      <div class="ch-wrap"><canvas id="dc1" role="img" aria-label="Monthly gross vs net pay Jan–Apr 2026">Monthly pay data.</canvas></div>
+      <div class="ch-wrap"><canvas id="dc1"></canvas></div>
       <div class="ch-leg"><span><span class="sw" style="background:#0a1628;"></span>Gross</span><span><span class="sw" style="background:#f90;"></span>Net</span></div>
     </div>
     <div class="card">
-      <div class="ct">April deductions breakdown</div>
-      <div class="ch-wrap"><canvas id="dc2" role="img" aria-label="April 2026 deductions donut">April deductions.</canvas></div>
+      <div class="ct">Latest month deductions</div>
+      <div class="ch-wrap"><canvas id="dc2"></canvas></div>
       <div class="ch-leg" id="dc2-leg"></div>
     </div>
   </div>
   <div class="slabel">Alerts</div>
-  <div class="al-row al-green"><div class="al-dot" style="background:#1a7a4a;"></div><div><strong style="color:#1a7a4a;">Direct deposit confirmed</strong> — April 30 deposit of $6,317.47 posted to ••••4525</div></div>
+  <div class="al-row al-green"><div class="al-dot" style="background:#1a7a4a;"></div><div><strong style="color:#1a7a4a;">Direct deposit confirmed</strong> — ${PC[PC.length-1].month} deposit of ${f(PC[PC.length-1].net)} posted to ••••4525</div></div>
   <div class="al-row al-blue"><div class="al-dot" style="background:#185fa5;"></div><div><strong style="color:#185fa5;">W-2 available</strong> — Your 2025 W-2 is ready for download in Tax Docs</div></div>
   <div class="al-row al-amber"><div class="al-dot" style="background:#8a5a00;"></div><div><strong style="color:#8a5a00;">Quick tip</strong> — Go to Pay History to download any paycheck as PDF or CSV</div></div>`;
 }
 
 function renderDashCharts(){
-  mc('dc1','bar',{labels:['Jan','Feb','Mar','Apr'],datasets:[
-    {label:'Gross',data:[9007.93,9121.07,9000,9156.91],backgroundColor:'#0a1628',borderRadius:4},
-    {label:'Net',data:[6370.75,6406.33,6365.24,6317.47],backgroundColor:'#f90',borderRadius:4}
+  mc('dc1','bar',{labels:PC.map(p=>p.short),datasets:[
+    {label:'Gross',data:PC.map(p=>p.gross),backgroundColor:'#0a1628',borderRadius:4},
+    {label:'Net',data:PC.map(p=>p.net),backgroundColor:'#f90',borderRadius:4}
   ]},{scales:{y:{ticks:{callback:v=>'$'+(v/1000).toFixed(0)+'k',font:{size:10}},grid:{color:'#f3f3f3'}},x:{ticks:{font:{size:10}},grid:{display:false}}}});
-  const ded=[{l:'Net Pay',v:6317.47,c:'#1a7a4a'},{l:'Fed Tax',v:1099.33,c:'#0a1628'},{l:'SS+Medicare',v:693.96,c:'#2b5cad'},{l:'401(k)',v:720,c:'#f90'},{l:'Medical',v:87,c:'#ffc44d'},{l:'WA Leave',v:73.91,c:'#7baee8'},{l:'HSA',v:8.33,c:'#d4edda'}];
+  const last=PC[PC.length-1];
+  const ded=[
+    {l:'Net Pay',v:last.net,c:'#1a7a4a'},
+    {l:'Fed Tax',v:last.stat[0].a,c:'#0a1628'},
+    {l:'SS+Medicare',v:last.stat[1].a+last.stat[2].a,c:'#2b5cad'},
+    {l:'401(k)',v:(last.other.find(o=>o.l.includes('401'))||{a:0}).a,c:'#f90'},
+    {l:'Medical',v:(last.other.find(o=>o.l.includes('Medical'))||{a:0}).a+(last.other.find(o=>o.l.includes('Dental'))||{a:0}).a,c:'#ffc44d'},
+    {l:'WA Leave',v:last.stat[3].a+last.stat[4].a,c:'#7baee8'},
+    {l:'HSA',v:(last.other.find(o=>o.l==='HSA')||{a:0}).a,c:'#d4edda'}
+  ];
   const tot=ded.reduce((s,d)=>s+d.v,0);
   mc('dc2','doughnut',{labels:ded.map(d=>d.l),datasets:[{data:ded.map(d=>d.v),backgroundColor:ded.map(d=>d.c),borderWidth:2,borderColor:'#fff'}]},{cutout:'60%'});
   document.getElementById('dc2-leg').innerHTML=ded.map(d=>`<span><span class="sw" style="background:${d.c};"></span>${d.l} ${((d.v/tot)*100).toFixed(0)}%</span>`).join('');
@@ -279,20 +547,23 @@ function pagePaychecks(){
   return`<div id="toast" class="toast"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#fff" stroke-width="1.5"/><polyline points="5,8.5 7,10.5 11,6" stroke="#fff" stroke-width="1.5" fill="none"/></svg> <span id="toast-msg">Download started!</span></div>
   <div class="g2">
     <div class="card">
-      <div class="ct">Pay statements</div>
+      <div class="ct" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Pay statements</span>
+        <span style="font-size:10px;color:#ccc;cursor:default;" title="Triple-click the AWS logo to generate a new paycheck">⚙</span>
+      </div>
       ${PC.map((_,i)=>`<div class="pay-row${i===activeIdx?' active':''}" onclick="showDetail(${i})" id="pr${i}">
         <div><div class="pm">${PC[i].month}</div><div class="pd">Pay date: ${PC[i].payDate}</div></div>
         <div><div class="pn">${f(PC[i].net)}</div><div class="pg">Gross: ${f(PC[i].gross)}</div></div>
       </div>`).join('')}
     </div>
     <div class="card">
-      <div class="ct" id="det-title">April 2026 — Statement</div>
+      <div class="ct" id="det-title">Statement</div>
       <div id="det-body"></div>
     </div>
   </div>
   <div class="card" style="margin-bottom:12px;">
     <div class="ct">Earnings trend</div>
-    <div class="ch-wrap"><canvas id="tc" role="img" aria-label="Monthly earnings trend line chart">Earnings trend.</canvas></div>
+    <div class="ch-wrap"><canvas id="tc"></canvas></div>
   </div>`;
 }
 
@@ -343,54 +614,101 @@ function showToast(msg){
 
 function downloadPDF(i){
   const p=PC[i];
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Earnings Statement - ${p.month}</title>
-<style>body{font-family:Arial,sans-serif;font-size:12px;color:#000;margin:0;padding:30px;max-width:700px;margin:auto;}
-.header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #000;padding-bottom:12px;margin-bottom:16px;}
-.logo{font-size:22px;font-weight:700;letter-spacing:2px;color:#0a1628;}
-.right{text-align:right;}
-.right h2{font-size:18px;margin:0 0 6px;}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
-.info-box{background:#f7f7f7;padding:10px 12px;border:1px solid #ddd;}
-.info-box h4{margin:0 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#555;}
-table{width:100%;border-collapse:collapse;margin-bottom:12px;}
-th{background:#0a1628;color:#fff;padding:6px 10px;font-size:11px;text-align:left;}
-td{padding:5px 10px;border-bottom:1px solid #eee;font-size:12px;}
-.amt{text-align:right;}
-.neg{color:#c0392b;}
-.total-row td{font-weight:700;background:#f0f2f5;font-size:13px;}
-.net-row td{font-weight:700;background:#0a1628;color:#fff;font-size:14px;}
-.footer{margin-top:20px;font-size:10px;color:#888;border-top:1px solid #ddd;padding-top:10px;text-align:center;}
-</style></head><body>
-<div class="header">
-  <div><div class="logo">AWS</div><div style="font-size:12px;line-height:1.7;">AMAZON WEB SERVICES INC<br>202 WESTLAKE AVE N<br>SEATTLE, WA 98109</div></div>
-  <div class="right"><h2>Earnings Statement</h2><div>Period: ${p.period}</div><div>Pay Date: ${p.payDate}</div><div>Advice #: ${p.advice}</div></div>
-</div>
-<div class="info-grid">
-  <div class="info-box"><h4>Employee</h4>KOUSHIK PONUGOTI<br>15850 NE 40TH ST APT C213<br>REDMOND, WA 98052</div>
-  <div class="info-box"><h4>Pay Info</h4>Rate: $51.9241/hr · Basis: Salary<br>Filing: Single/MFS<br>Bank: Checking ••••4525</div>
-</div>
-<table><tr><th>Earnings</th><th class="amt">This Period</th></tr>
-${p.earnings.map(e=>`<tr><td>${e.l}</td><td class="amt">${f(e.a)}</td></tr>`).join('')}
-<tr class="total-row"><td>Gross Pay</td><td class="amt">${f(p.gross)}</td></tr></table>
-<table><tr><th>Statutory Deductions</th><th class="amt">Amount</th></tr>
-${p.stat.map(e=>`<tr><td>${e.l}</td><td class="amt neg">-${f(e.a)}</td></tr>`).join('')}</table>
-<table><tr><th>Other Deductions</th><th class="amt">Amount</th></tr>
-${p.other.map(e=>`<tr><td>${e.l}</td><td class="amt neg">-${f(e.a)}</td></tr>`).join('')}
-<tr class="net-row"><td>NET PAY</td><td class="amt">${f(p.net)}</td></tr></table>
-<div class="footer">Deposited to Checking ••••4525 on ${p.payDate} · Amazon Web Services Inc · EIN: 91-1986180 · atoz.amazon.work</div>
-</body></html>`;
-  const blob=new Blob([html],{type:'text/html'});
-  const url=URL.createObjectURL(blob);
-  const w=window.open(url,'_blank');
-  if(!w){const a=document.createElement('a');a.href=url;a.download=`Earnings_${p.month.replace(' ','_')}.html`;a.click();}
-  showToast('Paycheck opened — use Print › Save as PDF to download');
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'pt',format:'letter'});
+  const W=doc.internal.pageSize.getWidth();
+  const margin=40;
+  let y=margin;
+
+  // Header bar
+  doc.setFillColor(10,22,40);
+  doc.rect(0,0,W,54,'F');
+  doc.setFontSize(18);doc.setFont('helvetica','bold');doc.setTextColor(249,153,0);
+  doc.text('AWS',margin,34);
+  doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(180,190,210);
+  doc.text('AMAZON WEB SERVICES INC  |  202 WESTLAKE AVE N, SEATTLE WA 98109',margin+36,22);
+  doc.setFontSize(13);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);
+  doc.text('EARNINGS STATEMENT',W-margin,34,{align:'right'});
+  y=70;
+
+  // Meta row
+  doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(100,100,100);
+  doc.text('Period: '+p.period,margin,y);
+  doc.text('Pay Date: '+p.payDate,W/2,y,{align:'center'});
+  doc.text('Advice #: '+p.advice,W-margin,y,{align:'right'});
+  y+=14;
+
+  // Info boxes
+  doc.setFillColor(247,248,251);
+  doc.roundedRect(margin,y,240,48,3,3,'F');
+  doc.roundedRect(margin+250,y,240,48,3,3,'F');
+  doc.setFontSize(7.5);doc.setTextColor(120,120,120);doc.setFont('helvetica','bold');
+  doc.text('EMPLOYEE',margin+8,y+12);
+  doc.text('PAY INFO',margin+258,y+12);
+  doc.setFont('helvetica','normal');doc.setTextColor(20,20,20);doc.setFontSize(8.5);
+  doc.text('Koushik Ponugoti',margin+8,y+24);
+  doc.text('15850 NE 40TH ST APT C213, REDMOND WA 98052',margin+8,y+36);
+  doc.text('Rate: $51.9241/hr  |  Basis: Salary',margin+258,y+24);
+  doc.text('Filing: Single/MFS  |  Bank: Checking xxxx4525',margin+258,y+36);
+  y+=64;
+
+  const section=(title,rows,lastBold)=>{
+    doc.setFillColor(10,22,40);
+    doc.rect(margin,y,W-margin*2,16,'F');
+    doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);
+    doc.text(title,margin+6,y+11);
+    doc.text('AMOUNT',W-margin-6,y+11,{align:'right'});
+    y+=16;
+    rows.forEach((r,idx)=>{
+      const isLast=idx===rows.length-1&&lastBold;
+      const rowH=isLast?20:15;
+      if(isLast){
+        doc.setFillColor(240,242,245);
+        doc.rect(margin,y,W-margin*2,rowH,'F');
+        doc.setFont('helvetica','bold');doc.setTextColor(10,22,40);doc.setFontSize(10);
+      } else {
+        doc.setFillColor(idx%2===0?255:250,idx%2===0?255:251,idx%2===0?255:252);
+        doc.rect(margin,y,W-margin*2,rowH,'F');
+        doc.setFont('helvetica','normal');doc.setTextColor(60,60,60);doc.setFontSize(8.5);
+      }
+      doc.text(r[0],margin+8,y+rowH*0.68);
+      doc.text(r[1],W-margin-8,y+rowH*0.68,{align:'right'});
+      y+=rowH;
+    });
+    y+=8;
+  };
+
+  section('EARNINGS',[
+    ...p.earnings.map(e=>[e.l,f(e.a)]),
+    ['Gross Pay',f(p.gross)]
+  ],true);
+
+  section('STATUTORY DEDUCTIONS',p.stat.map(e=>[e.l,'-'+f(e.a)]),false);
+  section('OTHER DEDUCTIONS',p.other.map(e=>[e.l,'-'+f(e.a)]),false);
+
+  // Net pay bar
+  doc.setFillColor(10,22,40);
+  doc.rect(margin,y,W-margin*2,28,'F');
+  doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);doc.setFontSize(11);
+  doc.text('NET PAY',margin+10,y+18);
+  doc.setTextColor(74,222,128);doc.setFontSize(13);
+  doc.text(f(p.net),W-margin-10,y+18,{align:'right'});
+  y+=40;
+
+  // Footer
+  doc.setFontSize(7.5);doc.setFont('helvetica','normal');doc.setTextColor(160,160,160);
+  doc.text('Deposited to Checking xxxx4525 on '+p.payDate+'  |  EIN: 91-1986180  |  atoz.amazon.work',W/2,y,{align:'center'});
+
+  doc.save('Earnings_'+p.month.replace(' ','_')+'.pdf');
+  showToast('PDF downloaded!');
 }
+
 
 function downloadCSV(i){
   const p=PC[i];
   const rows=[
     ['AMAZON WEB SERVICES INC — EARNINGS STATEMENT'],
-    ['Employee','KOUSHIK PONUGOTI'],
+    ['Employee','Koushik Ponugoti'],
     ['Pay Period',p.period],['Pay Date',p.payDate],['Advice Number',p.advice],[''],
     ['EARNINGS','Amount'],
     ...p.earnings.map(e=>[e.l,e.a.toFixed(2)]),
@@ -430,7 +748,7 @@ function pageW2(){
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
         <div style="border:1px solid #555;padding:6px 8px;grid-column:1/-1;"><div style="font-size:9px;color:#444;margin-bottom:2px;">c. Employer</div><div style="font-weight:700;">AMAZON WEB SERVICES INC · 202 WESTLAKE AVE N, SEATTLE WA 98109</div></div>
-        <div style="border:1px solid #555;padding:6px 8px;grid-column:1/-1;"><div style="font-size:9px;color:#444;margin-bottom:2px;">e. Employee &nbsp; d. SSN: XXX-XX-XXXX</div><div style="font-weight:700;">KOUSHIK PONUGOTI · 15850 NE 40TH ST APT C213, REDMOND WA 98052</div></div>
+        <div style="border:1px solid #555;padding:6px 8px;grid-column:1/-1;"><div style="font-size:9px;color:#444;margin-bottom:2px;">e. Employee &nbsp; d. SSN: XXX-XX-XXXX</div><div style="font-weight:700;">Koushik Ponugoti · 15850 NE 40TH ST APT C213, REDMOND WA 98052</div></div>
         <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">1. Wages, tips</div><div style="font-weight:700;">${f(d.wages)}</div></div>
         <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">2. Federal tax withheld</div><div style="font-weight:700;">${f(d.fedTax)}</div></div>
         <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">3. SS wages</div><div style="font-weight:700;">${f(d.ss_wages)}</div></div>
@@ -461,39 +779,73 @@ function pageW2(){
 
 function downloadW2(){
   const d={wages:107240.15,fedTax:19823.45,ss_wages:107240.15,ss_tax:6649.09,med_wages:107240.15,med_tax:1555.00,k401:8640,hsa:99.96,dental:36,medical:1008};
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>W-2 2025 - Koushik Ponugoti</title>
-<style>body{font-family:Arial,sans-serif;font-size:11px;padding:30px;max-width:680px;margin:auto;color:#000;}
-.hdr{display:flex;justify-content:space-between;margin-bottom:12px;border-bottom:2px solid #000;padding-bottom:10px;}
-.title{font-size:20px;font-weight:700;letter-spacing:1px;}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:0;}
-.box{border:1px solid #555;padding:6px 8px;}
-.wide{grid-column:1/-1;}
-.bl{font-size:9px;color:#444;margin-bottom:2px;}
-.bv{font-weight:700;font-size:12px;}
-.footer{margin-top:12px;font-size:9px;color:#666;text-align:center;border-top:1px solid #ccc;padding-top:8px;}
-</style></head><body>
-<div class="hdr"><div><div class="title">W-2 Wage and Tax Statement</div><div>Tax Year 2025 · OMB No. 1545-0008 · Dept. of the Treasury — IRS</div></div><div style="text-align:right;"><div>Control: 2025-KP-001</div><div>EIN: 91-1986180</div></div></div>
-<div class="grid">
-  <div class="box wide"><div class="bl">c. Employer</div><div class="bv">AMAZON WEB SERVICES INC · 202 WESTLAKE AVE N, SEATTLE WA 98109</div></div>
-  <div class="box wide"><div class="bl">e. Employee · d. SSN: XXX-XX-XXXX</div><div class="bv">KOUSHIK PONUGOTI · 15850 NE 40TH ST APT C213, REDMOND WA 98052</div></div>
-  <div class="box"><div class="bl">1. Wages, tips, other comp.</div><div class="bv">${f(d.wages)}</div></div>
-  <div class="box"><div class="bl">2. Federal income tax withheld</div><div class="bv">${f(d.fedTax)}</div></div>
-  <div class="box"><div class="bl">3. Social security wages</div><div class="bv">${f(d.ss_wages)}</div></div>
-  <div class="box"><div class="bl">4. Social security tax withheld</div><div class="bv">${f(d.ss_tax)}</div></div>
-  <div class="box"><div class="bl">5. Medicare wages and tips</div><div class="bv">${f(d.med_wages)}</div></div>
-  <div class="box"><div class="bl">6. Medicare tax withheld</div><div class="bv">${f(d.med_tax)}</div></div>
-  <div class="box"><div class="bl">12a — Code D (401k Traditional)</div><div class="bv">${f(d.k401)}</div></div>
-  <div class="box"><div class="bl">12b — Code W (HSA)</div><div class="bv">${f(d.hsa)}</div></div>
-  <div class="box"><div class="bl">14 — Pre-Tax Medical</div><div class="bv">${f(d.medical)}</div></div>
-  <div class="box"><div class="bl">14 — Pre-Tax Dental</div><div class="bv">${f(d.dental)}</div></div>
-  <div class="box"><div class="bl">15. State</div><div class="bv">WA</div></div>
-  <div class="box"><div class="bl">17. State income tax</div><div class="bv">$0.00 — Washington has no state income tax</div></div>
-</div>
-<div class="footer">For questions contact Amazon HR at atoz.amazon.work · Phone: 888-892-7180</div>
-</body></html>`;
-  const w=window.open(URL.createObjectURL(new Blob([html],{type:'text/html'})),'_blank');
-  if(!w){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download='W2_2025_Koushik_Ponugoti.html';a.click();}
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'pt',format:'letter'});
+  const W=doc.internal.pageSize.getWidth();
+  const margin=40;
+  let y=margin;
+
+  // Header
+  doc.setFillColor(10,22,40);
+  doc.rect(0,0,W,50,'F');
+  doc.setFontSize(17);doc.setFont('helvetica','bold');doc.setTextColor(249,153,0);
+  doc.text('AWS',margin,32);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(200,210,230);
+  doc.text('W-2 WAGE AND TAX STATEMENT',margin+38,22);
+  doc.setFontSize(8);doc.setTextColor(150,165,190);
+  doc.text('Tax Year 2025  |  OMB No. 1545-0008  |  Dept. of the Treasury - IRS',margin+38,34);
+  doc.setFontSize(11);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);
+  doc.text('W-2  2025',W-margin,32,{align:'right'});
+  y=62;
+
+  // Control info
+  doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(100,100,100);
+  doc.text('Control: 2025-KP-001  |  EIN: 91-1986180',margin,y);
+  y+=14;
+
+  // Grid helper
+  const box=(x,bw,by,bh,label,val)=>{
+    doc.setFillColor(247,248,251);
+    doc.rect(x,by,bw,bh,'F');
+    doc.setDrawColor(180,180,180);
+    doc.rect(x,by,bw,bh,'S');
+    doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(120,120,120);
+    doc.text(label,x+5,by+10);
+    doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(10,22,40);
+    doc.text(val,x+5,by+22);
+  };
+
+  const fw=W-margin*2;
+  // Employer & employee rows
+  box(margin,fw,y,28,'c. Employer','AMAZON WEB SERVICES INC  |  202 WESTLAKE AVE N, SEATTLE WA 98109');
+  y+=28;
+  box(margin,fw,y,28,'e. Employee  |  d. SSN: XXX-XX-XXXX','Koushik Ponugoti  |  15850 NE 40TH ST APT C213, REDMOND WA 98052');
+  y+=28;
+
+  // Data grid: 2-column rows
+  const half=fw/2;
+  const rows2=[
+    ['1. Wages, tips, other comp.',f(d.wages),'2. Federal income tax withheld',f(d.fedTax)],
+    ['3. Social security wages',f(d.ss_wages),'4. Social security tax withheld',f(d.ss_tax)],
+    ['5. Medicare wages and tips',f(d.med_wages),'6. Medicare tax withheld',f(d.med_tax)],
+    ['12a - Code D (401k Traditional)',f(d.k401),'12b - Code W (HSA)',f(d.hsa)],
+    ['14 - Pre-Tax Medical',f(d.medical),'14 - Pre-Tax Dental',f(d.dental)],
+    ['15. State','WA','17. State income tax','$0.00 - Washington has no state income tax'],
+  ];
+  rows2.forEach(r=>{
+    box(margin,half,y,26,r[0],r[1]);
+    box(margin+half,half,y,26,r[2],r[3]);
+    y+=26;
+  });
+  y+=16;
+
+  // Footer
+  doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(140,140,140);
+  doc.text('For questions contact Amazon HR at atoz.amazon.work  |  Phone: 888-892-7180',W/2,y,{align:'center'});
+
+  doc.save('W2_2025_Koushik_Ponugoti.pdf');
 }
+
 
 function pageProfile(){
   return`<div class="g2">
@@ -529,3 +881,5 @@ function doLogout(){
   document.getElementById('lerr').style.display='none';
 }
 </script>
+</body>
+</html>
