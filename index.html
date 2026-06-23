@@ -284,7 +284,7 @@ img,svg,canvas{max-width:100%;}
       <div class="sb-bot">
         <div class="sb-av">
           <div class="av-circle">KP</div>
-          <div><div class="av-name">Vamsi Chunduri</div><div class="av-email">Vamsi@amazon.com</div></div>
+          <div><div class="av-name">Koushik Ponugoti</div><div class="av-email">Koushik@amazon.com</div></div>
         </div>
         <button class="lo-btn" onclick="doLogout()">Sign out</button>
       </div>
@@ -302,7 +302,7 @@ img,svg,canvas{max-width:100%;}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-const CREDS={email:'vamsi.chunduri@amazon.com',password:'AWS@2026!'};
+const CREDS={email:'koushik.ponugoti@amazon.com',password:'AWS@2026!'};
 
 // Base paychecks — additional ones get pushed here
 const BASE_PC=[
@@ -650,7 +650,7 @@ function downloadPDF(i){
   doc.text('EMPLOYEE',margin+8,y+12);
   doc.text('PAY INFO',margin+258,y+12);
   doc.setFont('helvetica','normal');doc.setTextColor(20,20,20);doc.setFontSize(8.5);
-  doc.text('Vamsi Chunduri',margin+8,y+24);
+  doc.text('Koushik Ponugoti',margin+8,y+24);
   doc.text('15850 NE 40TH ST APT C213, REDMOND WA 98052',margin+8,y+36);
   doc.text('Rate: $51.9241/hr  |  Basis: Salary',margin+258,y+24);
   doc.text('Filing: Single/MFS  |  Bank: Checking xxxx4525',margin+258,y+36);
@@ -712,7 +712,7 @@ function downloadCSV(i){
   const p=PC[i];
   const rows=[
     ['AMAZON WEB SERVICES INC — EARNINGS STATEMENT'],
-    ['Employee','Vamsi Chunduri'],
+    ['Employee','Koushik Ponugoti'],
     ['Pay Period',p.period],['Pay Date',p.payDate],['Advice Number',p.advice],[''],
     ['EARNINGS','Amount'],
     ...p.earnings.map(e=>[e.l,e.a.toFixed(2)]),
@@ -752,7 +752,7 @@ function pageW2(){
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
         <div style="border:1px solid #555;padding:6px 8px;grid-column:1/-1;"><div style="font-size:9px;color:#444;margin-bottom:2px;">c. Employer</div><div style="font-weight:700;">AMAZON WEB SERVICES INC · 202 WESTLAKE AVE N, SEATTLE WA 98109</div></div>
-        <div style="border:1px solid #555;padding:6px 8px;grid-column:1/-1;"><div style="font-size:9px;color:#444;margin-bottom:2px;">e. Employee &nbsp; d. SSN: XXX-XX-XXXX</div><div style="font-weight:700;">Vamsi Chunduri · 15850 NE 40TH ST APT C213, REDMOND WA 98052</div></div>
+        <div style="border:1px solid #555;padding:6px 8px;grid-column:1/-1;"><div style="font-size:9px;color:#444;margin-bottom:2px;">e. Employee &nbsp; d. SSN: XXX-XX-XXXX</div><div style="font-weight:700;">Koushik Ponugoti · 15850 NE 40TH ST APT C213, REDMOND WA 98052</div></div>
         <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">1. Wages, tips</div><div style="font-weight:700;">${f(d.wages)}</div></div>
         <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">2. Federal tax withheld</div><div style="font-weight:700;">${f(d.fedTax)}</div></div>
         <div style="border:1px solid #555;padding:6px 8px;"><div style="font-size:9px;color:#444;">3. SS wages</div><div style="font-weight:700;">${f(d.ss_wages)}</div></div>
@@ -827,7 +827,7 @@ function downloadW2(){
   // Employer & employee rows
   box(margin,fw,y,28,'c. Employer','AMAZON WEB SERVICES INC  |  202 WESTLAKE AVE N, SEATTLE WA 98109');
   y+=28;
-  box(margin,fw,y,28,'e. Employee  |  d. SSN: XXX-XX-XXXX','Vamsi Chunduri  |  15850 NE 40TH ST APT C213, REDMOND WA 98052');
+  box(margin,fw,y,28,'e. Employee  |  d. SSN: XXX-XX-XXXX','Koushik Ponugoti  |  15850 NE 40TH ST APT C213, REDMOND WA 98052');
   y+=28;
 
   // Data grid: 2-column rows
@@ -851,7 +851,7 @@ function downloadW2(){
   doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(140,140,140);
   doc.text('For questions contact Amazon HR at atoz.amazon.work  |  Phone: 888-892-7180',W/2,y,{align:'center'});
 
-  doc.save('W2_2025_Vamsi_Chunduri.pdf');
+  doc.save('W2_2025_Koushik_Ponugoti.pdf');
 }
 
 
@@ -860,7 +860,7 @@ function pageProfile(){
     <div class="card">
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
         <div style="width:50px;height:50px;background:#e6f0fb;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:#185fa5;">KP</div>
-        <div><div style="font-size:15px;font-weight:500;color:#0a1628;">Vamsi Chunduri</div><div style="font-size:12px;color:#aaa;">Software Quality Engineer</div><span class="badge bg-green" style="margin-top:4px;display:inline-block;">Active</span></div>
+        <div><div style="font-size:15px;font-weight:500;color:#0a1628;">Koushik Ponugoti</div><div style="font-size:12px;color:#aaa;">Software Quality Engineer</div><span class="badge bg-green" style="margin-top:4px;display:inline-block;">Active</span></div>
       </div>
       <div class="ct">Personal info</div>
       ${[['Employee ID','047772'],['Department','731200'],['Clock','6091'],['Filing Status','Single / MFS'],['Pay Rate','$51.9241 / hr'],['Pay Basis','Salary']].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid #f0f0f0;font-size:13px;"><span style="color:#888;">${l}</span><span style="font-weight:500;color:#0a1628;">${v}</span></div>`).join('')}
